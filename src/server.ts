@@ -2,11 +2,10 @@ import 'reflect-metadata';
 import express from 'express';
 
 import './database';
+import routes from './routes';
 
 const app = express();
 
-app.get('/', (request, response) => {
-  response.json({ message: 'hello world!' });
-});
+app.use(routes);
 
 app.listen(3333, () => console.log('backend has been started!'));
