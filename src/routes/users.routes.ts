@@ -1,11 +1,18 @@
 import { Router } from 'express';
+import { getRepository } from 'typeorm';
 
+import authenticationMiddleware from '../middlewares/authenticationMiddleware';
+import User from '../models/User';
 import CreateUserService from '../services/CreateUserService';
 
 const usersRouter = Router();
 
-usersRouter.get('/', (request, response) => {
-  response.json({ message: 'TODO: GET /users' });
+usersRouter.get('/', authenticationMiddleware, async (request, response) => {
+  const userId = request.user.id;
+  const usersRepository = getRepository(User);
+  const user = await usersRepository.findOne(userId);
+  // TODO: retornar user sem exibir o password
+  return response.json(user);
 });
 
 usersRouter.post('/', async (request, response) => {
