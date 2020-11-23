@@ -1,11 +1,15 @@
 import { Router } from 'express';
 import { getRepository } from 'typeorm';
+import multer from 'multer';
 
 import authenticationMiddleware from '../middlewares/authenticationMiddleware';
 import User from '../models/User';
 import CreateUserService from '../services/CreateUserService';
+import uploadConfig from '../config/upload';
+import AppError from '../errors/AppError';
 
 const usersRouter = Router();
+const uploadMiddleware = multer(uploadConfig);
 
 usersRouter.get('/', authenticationMiddleware, async (request, response) => {
   const userId = request.user.id;
@@ -35,9 +39,18 @@ usersRouter.put('/', (request, response) => {
   response.json({ message: 'TODO: PUT /users' });
 });
 
-usersRouter.patch('/', (request, response) => {
-  response.json({ message: 'TODO: PATCH /users' });
-});
+usersRouter.patch(
+  '/avatar',
+  authenticationMiddleware,
+  uploadMiddleware.single('avatar'),
+  (request, response) => {
+    if (!request.file) {
+      throw new AppError('Missing "avatar" file.');
+    }
+
+    return response.json({ avatar: request.file.filename });
+  }
+);
 
 usersRouter.delete('/', (request, response) => {
   response.json({ message: 'TODO: DELETE /users' });
