@@ -13,8 +13,15 @@ usersRouter.post('/', async (request, response) => {
   const createUser = new CreateUserService();
 
   const user = await createUser.execute({ name, email, password });
+  const userWithoutPassword = {
+    id: user.id,
+    name,
+    email,
+    created_at: user.created_at,
+    updated_at: user.updated_at,
+  };
 
-  return response.json(user);
+  return response.json(userWithoutPassword);
 });
 
 usersRouter.put('/', (request, response) => {
